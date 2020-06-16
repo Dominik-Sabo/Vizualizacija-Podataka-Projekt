@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        function populateSelection(section, data){
+            section.selectAll("img")
+            .data(data)
+            .enter()
+            .append("img")
+            .attr("src", function(d) {return d.Image;})
+            .attr("style", "border-color:black;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;");
+        }
+
+        d3.csv("data.csv").then(function(data) {
+
+            let tank = [data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]];
+            let damage = [data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15], data[16], data[17], data[18], data[19], data[20], data[21], data[22], data[23], data[24]];
+            let support = [data[25], data[26], data[27], data[28], data[29], data[30], data[31]];
+
+            populateSelection(tanks, tank);
+            populateSelection(damagers, damage);
+            populateSelection(supports, support);
+           
+            d3.selectAll("img")
+            .on("click", updateData);
+            });
+
+        function updateData(d) {
+            if(!flag) d3.select("div").remove();
+            changeBorderColor(d.Index);
+
+            var data = d3.select("body")
+            .insert("div", ":first-child")
+            .attr("style", "margin:25px;height:400px");
+
+            data.append("img")
+            .attr("src", d.Image)
+            .attr("style", "border-color:black;border-style:solid;margin-right:20px;background-color:lightblue;float:left");
+
+            data.append("h1").html(d.Hero);
+            data.append("h3").html("Role: "+d.Role);
+            data.append("p").html("HP: "+d.HP);
+            if(d.Armor !== "") data.append("p").html("Armor: "+d.Armor);
+            if(d.Shield !== "") data.append("p").html("Shield: "+d.Shield);
+            data.append("p").html("Damage: "+d.Damage);
+            if(d.Healing !== "") data.append("p").html("Healing: "+d.Healing);
+            if(flag) flag = false;
+        }
+
+        function changeBorderColor(index){           
+            d3.selectAll("img").each(function(d, i){if(index == i) this.style = "border-color:yellow;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;";
+                                                    else this.style = "border-color:black;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;";});
+        }
+
+        
+        var flag = true;
+        
+        d3.select("body").append("h2").html("Tank");
+
+        var tanks = d3.select("body")
+        .append("div")
+        .style("text-align", "center");
+
+        d3.select("body").append("h2").html("Damage");
+
+        var damagers = d3.select("body")
+        .append("div")
+        .style("text-align", "center");
+
+        d3.select("body").append("h2").html("Support");
+
+        var supports = d3.select("body")
+        .append("div")
+        .style("text-align", "center");
+
+        
+
+        
+
+
+        
+
+
+        //d3.select("body").insert("h1", ":first-child");
+
+
+    </script>
+
+    
+</body>
+</html>
