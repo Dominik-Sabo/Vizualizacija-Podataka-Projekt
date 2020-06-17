@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
-    <title>Document</title>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <title>Overwatch ranks</title>
 </head>
-<body>
+<body style="background-image:url(../images/background.png);">
+    <style>
+        h3, p, g{color: wheat;}
+        h1, h2 {color: white;
+                font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif}
+    </style>
     <script>
 
         function populateSelection(section, data){
@@ -18,7 +27,7 @@
             .attr("style", "border-color:black;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;");
         }
 
-        d3.csv("data.csv").then(function(data) {
+        d3.csv("data.csv", function(data) {
 
             let tank = [data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]];
             let damage = [data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15], data[16], data[17], data[18], data[19], data[20], data[21], data[22], data[23], data[24]];
@@ -33,62 +42,293 @@
             });
 
         function updateData(d) {
-            if(!flag) d3.select("div").remove();
+            if(d.Index == selectedIndex) return;
+            if(!flag) row.remove();
             changeBorderColor(d.Index);
 
-            var data = d3.select("body")
-            .insert("div", ":first-child")
-            .attr("style", "margin:25px;height:400px");
+            row = d3.select("div")
+            .append("div")
+            .attr("class", "row")
+            .attr("style", "margin:25px;margin-bottom:5%");
 
-            data.append("img")
-            .attr("src", d.Image)
-            .attr("style", "border-color:black;border-style:solid;margin-right:20px;background-color:lightblue;float:left");
+            row.append("div")
+            .attr("class", "col-md-1")
 
-            data.append("h1").html(d.Hero);
-            data.append("h3").html("Role: "+d.Role);
-            data.append("p").html("HP: "+d.HP);
-            if(d.Armor !== "") data.append("p").html("Armor: "+d.Armor);
-            if(d.Shield !== "") data.append("p").html("Shield: "+d.Shield);
-            data.append("p").html("Damage: "+d.Damage);
-            if(d.Healing !== "") data.append("p").html("Healing: "+d.Healing);
+            var heroCol = row.append("div")
+            .attr("class", "col-md-4");
+
+            var rankCol = row.append("div")
+            .attr("class", "col-md-7")
+
+            updateHeroData(heroCol, d);
+            updateRankData(heroCol, d);
+            updateRankGraphs(rankCol, d);
+            
+
             if(flag) flag = false;
+            selectedIndex = d.Index  
         }
 
         function changeBorderColor(index){           
-            d3.selectAll("img").each(function(d, i){if(index == i) this.style = "border-color:yellow;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;";
-                                                    else this.style = "border-color:black;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;";});
+            d3.selectAll("img").each(function(d, i){
+                if(index == i) this.style = "border-color:yellow;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;";
+                else this.style = "border-color:black;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;";
+                });
         }
 
+        function updateHeroData(col, hero){
+            let heroCol = col.append("div")
+            .attr("class", "row")
+            .append("div")
+            .attr("class", "col-md-12")
+            .attr("style", "margin-bottom:50px");
+
+            heroCol.append("img")
+            .attr("src", hero.Image)
+            .attr("style", "border-color:black;border-style:solid;margin-right:20px;background-color:lightblue;float:left");
+
+            heroCol.append("h1").html(hero.Hero);
+            heroCol.append("h3").html("Role: "+hero.Role);
+            heroCol.append("p").html("HP: "+hero.HP);
+            if(hero.Armor !== "") heroCol.append("p").html("Armor: "+hero.Armor);
+            if(hero.Shield !== "") heroCol.append("p").html("Shield: "+hero.Shield);
+            heroCol.append("p").html("Damage: "+hero.Damage);
+            if(hero.Healing !== "") heroCol.append("p").html("Healing: "+hero.Healing);
+        }
+
+        function updateRankData(col, hero){
+            let rankCol = col.append("div")
+            .attr("class", "row")
+            .append("div")
+            .attr("class", "col-md-12")
+            .attr("style", "margin:30px");
+
+            rank = rankCol.append("h2")
+            .html("Rank: ")
+            .attr("style", "text-align:center;margin-bottom:50px");
+
+            dataRow = col.append("div")
+            .attr("class", "row");
+
+            dataCol = dataRow.append("div")
+            .attr("class", "col-md-6");
+            imageCol = dataRow.append("div")
+            .attr("class", "col-md-6");
+            imageCol.append("br");
+            imageCol.append("br");
+
+            var image;
+            
+
+            d3.csv(hero.Data, function(data) {
+
+                var dropdown = rank
+                .insert("select")
+                .on("change", function(d, i){
+                    image.remove();
+                    var selectedRank = dropdown.node().value;
+                    image = imageCol.append("img").attr("src", "images/" + selectedRank + ".png")
+                    .attr("style", "width:150px;height:auto");
+                    data.forEach(function(d) {
+                        if(selectedRank == d.Rank){
+                            pickRate.html("Pick rate:  " + d.Pick_rate + "%");
+                            winRate.html("Win rate:  " + d.Win_rate + "%");
+                            tieRate.html("Tie rate:  " + d.Tie_rate + "%");
+                            onFire.html("Time on fire:  " + d.On_fire + "%");
+                        }
+                    });
+                });
+
+                dropdown.selectAll("option")
+                    .data(data)
+                    .enter().append("option")
+                    .attr("value", function(d) { return d.Rank; })
+                    .text(function (d) { return d.Rank; })
+
+                pickRate = dataCol.append("h3").html("Pick rate:  " + data[0].Pick_rate + "%")
+                .attr("style", "margin-bottom:35px");
+                winRate = dataCol.append("h3").html("Win rate:  " + data[0].Win_rate + "%")
+                .attr("style", "margin-bottom:35px");
+                tieRate = dataCol.append("h3").html("Tie rate:  " + data[0].Tie_rate + "%")
+                .attr("style", "margin-bottom:35px");
+                onFire = dataCol.append("h3").html("Time on fire:  " + data[0].On_fire + "%")
+                .attr("style", "margin-bottom:35px");
+
+                image = imageCol.append("img").attr("src","images/All.png")
+                .attr("style", "width:150px;height:auto");
+            })
+
+           
+
+        }
+
+        function updateRankGraphs(col, hero){
+
+               d3.csv(hero.Data, function(data) {
+
+                data.forEach(function(d) {
+                    d.Pick_rate = +d.Pick_rate;
+                    d.On_fire = +d.On_fire;
+                });
+
+                var margin = { top: 20, bottom: 70, left: 60, right: 20 };
+                var width = 700 - margin.left - margin.right;
+                var height = 400 - margin.top - margin.bottom;
+                var barPadding = 5;
+                var barWidth = width / data.length - barPadding;
+
+                var x = d3.scale.ordinal()
+                    .domain(d3.range(data.length))
+                    .rangeRoundBands([0, width]);
+                var y = d3.scale.linear()
+                    .domain([0, d3.max(data,function(d){return d.Pick_rate+d.Pick_rate/10})])
+                    .range([height, 0]);
+
+                var svg = col.append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.bottom + margin.top)
+                    .attr("style", "background-color:gray;border-color:black;border-style:solid;margin-bottom:15px")
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    
+                var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .tickFormat(function(d, i) {return(data[i].Rank);});
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left");
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                svg.append("text")
+                    .attr("x", width / 2)
+                    .attr("y", height + margin.bottom / 2)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Rank");
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", 0 - height / 2)
+                    .attr("y", 0 - margin.left)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Pick rate (%)");
+                var barchart = svg.selectAll("rect")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d, i) {return x(i);})
+                    .attr("y", function(d) {return y(d.Pick_rate);} )
+                    .attr("height", function(d) {return height - y(d.Pick_rate);})
+                    .attr("width", barWidth)
+                    .attr("fill", function(d) {return color(d.Rank);})
+
+
+
+                    var x = d3.scale.ordinal()
+                    .domain(d3.range(data.length))
+                    .rangeRoundBands([0, width]);
+                var y = d3.scale.linear()
+                    .domain([0, d3.max(data,function(d){return d.On_fire+d.On_fire/10})])
+                    .range([height, 0]);
+
+                var svg = col.append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.bottom + margin.top)
+                    .attr("style", "background-color:gray;border-color:black;border-style:solid")
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .tickFormat(function(d, i) {return(data[i].Rank);});
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left");
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                svg.append("text")
+                    .attr("x", width / 2)
+                    .attr("y", height + margin.bottom / 2)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Rank");
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", 0 - height / 2)
+                    .attr("y", 0 - margin.left)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Time spent on fire (%)");
+                var barchart = svg.selectAll("rect")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d, i) {return x(i);})
+                    .attr("y", function(d) {return y(d.On_fire);} )
+                    .attr("height", function(d) {return height - y(d.On_fire);})
+                    .attr("width", barWidth)
+                    .attr("fill", function(d) {return color(d.Rank);})
+
+            });
+        }
+
+        function color(rank){
+            switch(rank){
+                case "Bronze": return "#cd7f32";
+                case "Silver": return "#C0C0C0";
+                case "Gold": return "#FFD700";
+                case "Platinum": return "#e5e4e2";
+                case "Diamond": return "#B9F2FF";
+                case "Master": return "#FFFF33";
+                case "Grandmaster": return "#FFFF66";
+                default: return "#f99e1a";
+            }
+        }
+
+
         
+        var row;
+        var selectedIndex = -1;
         var flag = true;
-        
-        d3.select("body").append("h2").html("Tank");
 
-        var tanks = d3.select("body")
+        d3.select("body").append("div")
+        .append("h1")
+        .attr("style", "margin-bottom:3.5%;text-align:center;font-size:4em")
+        .html("OVERWATCH RANK COMPARISON (BY HERO)");
+        
+        let selection = d3.select("body")
+        .append("div")
+        .attr("style", "text-align:center");
+
+        selection.append("h2").html("Tank");
+
+        var tanks = selection
+        .append("div")
+        .attr("style", "margin-bottom:50px");
+
+        selection.append("h2").html("Damage");
+
+        var damagers = selection
+        .append("div")
+        .attr("style", "margin-bottom:50px");
+
+        selection.append("h2").html("Support");
+
+        var supports = selection
         .append("div")
         .style("text-align", "center");
 
-        d3.select("body").append("h2").html("Damage");
-
-        var damagers = d3.select("body")
-        .append("div")
-        .style("text-align", "center");
-
-        d3.select("body").append("h2").html("Support");
-
-        var supports = d3.select("body")
-        .append("div")
-        .style("text-align", "center");
-
-        
-
-        
-
-
-        
-
-
-        //d3.select("body").insert("h1", ":first-child");
 
 
     </script>
