@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>        
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -28,8 +28,8 @@
             .attr("style", "border-color:black;border-style:solid;max-width:4%;size:auto;margin:10px;background-color:lightblue;");
         }
 
-        d3.csv("data.csv", function(data) {
-
+        d3.csv("data.csv", function(data) {     //  https://www.tutorialsteacher.com/d3js/loading-data-from-file-in-d3js 
+                                                //  Kako koristiti d3 biblioteku za učitavanje podataka iz csv datoteka
             let tank = [data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]];
             let damage = [data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15], data[16], data[17], data[18], data[19], data[20], data[21], data[22], data[23], data[24]];
             let support = [data[25], data[26], data[27], data[28], data[29], data[30], data[31]];
@@ -49,16 +49,15 @@
 
             row = d3.select("div")
             .append("div")
-            .attr("class", "row")
-            .attr("style", "margin-bottom:5%");
-
+            .attr("class", "row")                   //https://getbootstrap.com/docs/4.0/layout/grid/
+            .attr("style", "margin-bottom:5%");     //Korištenje bootstrap grida za raspodjelu elemenata po web stranici
+                                                    //Korišteni bootsrap je preuzet iz laboratorijske vježbe iz kolegija Web programiranje.
             row.append("div")
             .attr("class", "col-md-1")
 
             var heroCol = row.append("div")
             .attr("class", "col-md-5")
             .attr("style", "border-style:solid;border-color:darkgray");
-
 
             var rankCol = row.append("div")
             .attr("class", "col-md-5")
@@ -178,13 +177,13 @@
 
                 let relativeWidth;
 
-                if(screen.width == 1920) relativeWidth = 750;
-                else if(screen.width == 1600 || screen.width == 1680) relativeWidth = 625;
-                else relativeWidth = 500;
-
-                var margin = { top: 20, bottom: 70, left: 60, right: 20 };
-                var width = relativeWidth - margin.left - margin.right;
-                var height = 400 - margin.top - margin.bottom;
+                if(screen.width == 1920) relativeWidth = 750;                               //www.w3schools.com
+                else if(screen.width == 1600 || screen.width == 1680) relativeWidth = 625;  //https://www.w3schools.com/jsref/prop_screen_width.asp
+                else relativeWidth = 500;                                                   //Kako dobiti rezoluciju slike u javascriptu
+                                                                                            //Također, iz w3schools.com su css atributi koje nisam znao
+                var margin = { top: 20, bottom: 70, left: 60, right: 20 };  
+                var width = relativeWidth - margin.left - margin.right;     
+                var height = 400 - margin.top - margin.bottom;              
                 var barPadding = 5;
                 var barWidth = width / data.length - barPadding;
 
@@ -241,7 +240,7 @@
 
 
 
-                    var x = d3.scale.ordinal()
+                var x = d3.scale.ordinal()
                     .domain(d3.range(data.length))
                     .rangeRoundBands([0, width]);
                 var y = d3.scale.linear()
@@ -313,8 +312,8 @@
         var selectedIndex = -1;
         var flag = true;
 
-        d3.select("body").append("div")
-        .append("h1")
+        d3.select("body").append("div")     //Gotovo sve korištene d3 funkcije su iz Vizualizacija podataka - Priručnik za laboratorijske vježbe
+        .append("h1")                       //https://loomen.carnet.hr/pluginfile.php/2104457/mod_resource/content/0/Vizualizacija%20podataka%20LV%20priru%C4%8Dnik.pdf
         .attr("style", "margin:3.5%;text-align:center;font-size:4em")
         .html("OVERWATCH RANK COMPARISON (BY HERO)");
         
@@ -339,8 +338,6 @@
         var supports = selection
         .append("div")
         .style("margin-bottom", "100px");
-
-
 
     </script>
 
