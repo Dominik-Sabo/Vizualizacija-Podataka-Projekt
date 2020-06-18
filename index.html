@@ -15,6 +15,7 @@
         h3, p, g{color: wheat;}
         h1, h2 {color: white;
                 font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif}
+                p{font-size: 1.2em;}
     </style>
     <script>
 
@@ -49,16 +50,19 @@
             row = d3.select("div")
             .append("div")
             .attr("class", "row")
-            .attr("style", "margin:25px;margin-bottom:5%");
+            .attr("style", "margin-bottom:5%");
 
             row.append("div")
             .attr("class", "col-md-1")
 
             var heroCol = row.append("div")
-            .attr("class", "col-md-4");
+            .attr("class", "col-md-5")
+            .attr("style", "border-style:solid;border-color:darkgray");
+
 
             var rankCol = row.append("div")
-            .attr("class", "col-md-7")
+            .attr("class", "col-md-5")
+            .attr("style", "text-align:end;border-style:solid;border-color:darkgray;border-left-style:none;background-color:gray");
 
             updateHeroData(heroCol, d);
             updateRankData(heroCol, d);
@@ -81,14 +85,14 @@
             .attr("class", "row")
             .append("div")
             .attr("class", "col-md-12")
-            .attr("style", "margin-bottom:50px");
+            .attr("style", "margin-bottom:50px;margin:25px;");
 
             heroCol.append("img")
             .attr("src", hero.Image)
             .attr("style", "border-color:black;border-style:solid;margin-right:20px;background-color:lightblue;float:left");
 
-            heroCol.append("h1").html(hero.Hero);
-            heroCol.append("h3").html("Role: "+hero.Role);
+            heroCol.append("h1").html(hero.Hero).attr("style", "font-style:italic; text-transform:uppercase");
+            heroCol.append("h3").html("Role: "+hero.Role).attr("style", "margin-bottom:30px");
             heroCol.append("p").html("HP: "+hero.HP);
             if(hero.Armor !== "") heroCol.append("p").html("Armor: "+hero.Armor);
             if(hero.Shield !== "") heroCol.append("p").html("Shield: "+hero.Shield);
@@ -101,19 +105,22 @@
             .attr("class", "row")
             .append("div")
             .attr("class", "col-md-12")
-            .attr("style", "margin:30px");
+            .attr("style", "border-top-style:solid;border-color:darkgray");
 
             rank = rankCol.append("h2")
             .html("Rank: ")
-            .attr("style", "text-align:center;margin-bottom:50px");
+            .attr("style", "text-align:center;margin-bottom:50px;margin-top:30px");
 
             dataRow = col.append("div")
             .attr("class", "row");
 
             dataCol = dataRow.append("div")
-            .attr("class", "col-md-6");
+            .attr("class", "col-md-6")
+            .attr("style", "margin-left:25px");
+
             imageCol = dataRow.append("div")
-            .attr("class", "col-md-6");
+            .attr("class", "col-md-3")
+            .attr("style", "text-align:center");
             imageCol.append("br");
             imageCol.append("br");
 
@@ -128,7 +135,7 @@
                     image.remove();
                     var selectedRank = dropdown.node().value;
                     image = imageCol.append("img").attr("src", "images/" + selectedRank + ".png")
-                    .attr("style", "width:150px;height:auto");
+                    .attr("style", "width:150px;height:auto;border-style:solid;border-color:darkgray;background-color:lightblue");
                     data.forEach(function(d) {
                         if(selectedRank == d.Rank){
                             pickRate.html("Pick rate:  " + d.Pick_rate + "%");
@@ -155,10 +162,8 @@
                 .attr("style", "margin-bottom:35px");
 
                 image = imageCol.append("img").attr("src","images/All.png")
-                .attr("style", "width:150px;height:auto");
+                .attr("style", "width:150px;height:auto;border-style:solid;border-color:darkgray;background-color:lightblue");
             })
-
-           
 
         }
 
@@ -171,8 +176,14 @@
                     d.On_fire = +d.On_fire;
                 });
 
+                let relativeWidth;
+
+                if(screen.width == 1920) relativeWidth = 750;
+                else if(screen.width == 1600 || screen.width == 1680) relativeWidth = 625;
+                else relativeWidth = 500;
+
                 var margin = { top: 20, bottom: 70, left: 60, right: 20 };
-                var width = 700 - margin.left - margin.right;
+                var width = relativeWidth - margin.left - margin.right;
                 var height = 400 - margin.top - margin.bottom;
                 var barPadding = 5;
                 var barWidth = width / data.length - barPadding;
@@ -187,14 +198,14 @@
                 var svg = col.append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.bottom + margin.top)
-                    .attr("style", "background-color:gray;border-color:black;border-style:solid;margin-bottom:15px")
+                    .attr("style", "background-color:gray;margin-bottom:15px")
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                     
                 var xAxis = d3.svg.axis()
                     .scale(x)
                     .orient("bottom")
-                    .tickFormat(function(d, i) {return(data[i].Rank);});
+                    .tickFormat(function(d, i) {if(relativeWidth == 750) return(data[i].Rank); else if(i==7) return "GM"; else return(data[i].Rank[0]);});
                 var yAxis = d3.svg.axis()
                     .scale(y)
                     .orient("left");
@@ -240,13 +251,13 @@
                 var svg = col.append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.bottom + margin.top)
-                    .attr("style", "background-color:gray;border-color:black;border-style:solid")
+                    .attr("style", "background-color:gray")
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                 var xAxis = d3.svg.axis()
                     .scale(x)
                     .orient("bottom")
-                    .tickFormat(function(d, i) {return(data[i].Rank);});
+                    .tickFormat(function(d, i) {if(relativeWidth == 750) return(data[i].Rank); else if(i==7) return "GM"; else return(data[i].Rank[0]);});
                 var yAxis = d3.svg.axis()
                     .scale(y)
                     .orient("left");
@@ -304,7 +315,7 @@
 
         d3.select("body").append("div")
         .append("h1")
-        .attr("style", "margin-bottom:3.5%;text-align:center;font-size:4em")
+        .attr("style", "margin:3.5%;text-align:center;font-size:4em")
         .html("OVERWATCH RANK COMPARISON (BY HERO)");
         
         let selection = d3.select("body")
@@ -327,7 +338,7 @@
 
         var supports = selection
         .append("div")
-        .style("text-align", "center");
+        .style("margin-bottom", "100px");
 
 
 
